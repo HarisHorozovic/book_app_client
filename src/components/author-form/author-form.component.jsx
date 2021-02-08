@@ -1,7 +1,10 @@
 import React from 'react';
 import { Form, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import FormInput from '../form-input/form-input.component';
+
+import { createAuthor, editAuthor } from '../../redux/author/author.actions';
 
 class AuthorForm extends React.Component {
   constructor(props) {
@@ -29,22 +32,24 @@ class AuthorForm extends React.Component {
 
     let data = new FormData();
 
-    // data.append('isbn', this.state.isbn);
-    // data.append('title', this.state.title);
-    // data.append('pages', this.state.pages);
-    // data.append('published', this.state.published);
+    data.append('firstName', this.state.firstName);
+    data.append('lastName', this.state.lastName);
+    data.append('dob', this.state.dob);
+    data.append('published', this.state.published);
 
     if (this.state.image || this.state.image != '') {
       data.append('image', this.state.image);
     }
 
-    console.log(data);
+    if (this.props.singleAuthor) {
+      this.props.editAuthor(this.state.id, data);
+    } else {
+      this.props.createAuthor(data);
+    }
   };
 
   componentDidMount = () => {
-    if (this.props && Object.keys(this.props).length > 0) {
-      this.setState(this.props);
-    }
+    this.setState(this.props.singleAuthor);
   };
 
   render() {
@@ -99,4 +104,14 @@ class AuthorForm extends React.Component {
   }
 }
 
-export default AuthorForm;
+const mapStateToProps = ({ author, book }) => ({
+  singleAuthor: author.singleAuthor,
+  singleBook: book.singleBook,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  createAuthor: (data) => dispatch(createAuthor(data)),
+  editAuthor: (authorId, data) => dispatch(editAuthor(authorId, data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AuthorForm);

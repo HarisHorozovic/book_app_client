@@ -4,9 +4,9 @@ import { Tabs, Tab } from 'react-bootstrap';
 import BookForm from '../../components/book-form/book-form.component';
 import AuthorForm from '../../components/author-form/author-form.component';
 
-import './manage-item-page.styles.css';
+import './create-item-page.styles.css';
 
-class ManageItemPage extends React.Component {
+class CreateItemPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -18,7 +18,7 @@ class ManageItemPage extends React.Component {
     return (
       <Tabs
         className='manage-item-page'
-        id='manageItemPage'
+        id='CreateItemPage'
         defaultActiveKey='books'
         transition={false}
         activeKey={this.state.key}
@@ -35,4 +35,4 @@ class ManageItemPage extends React.Component {
   }
 }
 
-export default ManageItemPage;
+export default CreateItemPage;

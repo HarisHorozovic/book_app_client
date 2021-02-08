@@ -1,17 +1,21 @@
 import React from 'react';
 import { Form, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import FormInput from '../form-input/form-input.component';
 
+import { createBook, editBook } from '../../redux/book/book.actions';
+
 class BookForm extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.state = {
       isbn: '',
       title: '',
       pages: 0,
       published: 0,
+      newImage: '',
       image: '',
     };
   }
@@ -29,22 +33,24 @@ class BookForm extends React.Component {
 
     let data = new FormData();
 
-    // data.append('isbn', this.state.isbn);
-    // data.append('title', this.state.title);
-    // data.append('pages', this.state.pages);
-    // data.append('published', this.state.published);
+    data.append('isbn', this.state.isbn);
+    data.append('title', this.state.title);
+    data.append('pages', this.state.pages);
+    data.append('published', this.state.published);
 
-    if (this.state.image || this.state.image != '') {
-      data.append('image', this.state.image);
+    if (this.state.newImage || this.state.newImage != '') {
+      data.append('image', this.state.newImage);
     }
 
-    console.log(data);
+    if (this.props.singleBook) {
+      this.props.editBook(this.state.isbn, data);
+    } else {
+      this.props.createBook(data);
+    }
   };
 
   componentDidMount = () => {
-    if (this.props && Object.keys(this.props).length > 0) {
-      this.setState(this.props);
-    }
+    this.setState(this.props.singleBook);
   };
 
   render() {
@@ -95,7 +101,7 @@ class BookForm extends React.Component {
           <Form.File
             onChange={this.handleFileChange}
             id='image'
-            name='image'
+            name='newImage'
             placeholder='Upload image'
           />
           <Form.Text>Error handle here</Form.Text>
@@ -109,4 +115,13 @@ class BookForm extends React.Component {
   }
 }
 
-export default BookForm;
+const mapStateToProps = ({ book }) => ({
+  singleBook: book.singleBook,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  createBook: (data) => dispatch(createBook(data)),
+  editBook: (bookId, data) => dispatch(editBook(bookId, data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(BookForm);

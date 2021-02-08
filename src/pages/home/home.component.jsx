@@ -1,83 +1,40 @@
 import React from 'react';
 import { Tabs, Tab, Container, Row, Col } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import SingleItem from '../../components/single-item/single-item.component';
 
 import './home.styles.css';
+
+import { getAllAuthors } from '../../redux/author/author.actions';
+import { getAllBooks } from '../../redux/book/book.actions';
 
 class HomePage extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      books: [
-        {
-          isbn: 'dsaffdsdsfa',
-          title: 'Test',
-          pages: 36,
-          published: 1985,
-          image: null,
-        },
-      ],
-      authors: [
-        {
-          id: 'fdsafvdsadsafsafds',
-          firstName: 'John',
-          lastName: 'Doe',
-          dob: '15-03-1985',
-          image:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png',
-        },
-        {
-          id: 'fdsafvdsadsafsafds',
-          firstName: 'John',
-          lastName: 'Doe',
-          dob: '15-03-1985',
-          image:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png',
-        },
-        {
-          id: 'fdsafvdsadsafsafds',
-          firstName: 'John',
-          lastName: 'Doe',
-          dob: '15-03-1985',
-          image:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png',
-        },
-        {
-          id: 'fdsafvdsadsafsafds',
-          firstName: 'John',
-          lastName: 'Doe',
-          dob: '15-03-1985',
-          image:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png',
-        },
-        {
-          id: 'fdsafvdsadsafsafds',
-          firstName: 'John',
-          lastName: 'Doe',
-          dob: '15-03-1985',
-          image:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png',
-        },
-        {
-          id: 'fdsafvdsadsafsafds',
-          firstName: 'John',
-          lastName: 'Doe',
-          dob: '15-03-1985',
-          image:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png',
-        },
-      ],
       key: 'books',
     };
+  }
+
+  componentDidMount() {
+    if (!this.props.books) {
+      this.props.getAllBooks();
+    }
+
+    if (!this.props.authors) {
+      this.props.getAllAuthors();
+    }
   }
 
   changeKey = (key) => {
     this.setState({ key });
   };
   render() {
-    const { books, authors, key } = this.state;
+    const { key } = this.state;
+    const { books, authors } = this.props;
+
     return (
       <Tabs
         className='home-page'
@@ -138,4 +95,13 @@ class HomePage extends React.Component {
   }
 }
 
-export default HomePage;
+const mapStateToProps = ({ author, book }) => ({
+  authors: author.authors,
+  books: book.books,
+});
+const mapDispatchToProps = (dispatch) => ({
+  getAllAuthors: () => dispatch(getAllAuthors()),
+  getAllBooks: () => dispatch(getAllBooks()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

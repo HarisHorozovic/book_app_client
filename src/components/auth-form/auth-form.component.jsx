@@ -1,7 +1,10 @@
 import React from 'react';
 import { Form, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import FormInput from '../form-input/form-input.component';
+
+import { login, register } from '../../redux/user/user.actions';
 
 class AuthForm extends React.Component {
   constructor(props) {
@@ -19,8 +22,16 @@ class AuthForm extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    if (this.props.type == 'login') console.log(`Login`, this.state);
-    else console.log(`Register`, this.state);
+    if (this.props.type == 'login')
+      this.props.login({
+        username: this.state.username,
+        password: this.state.password,
+      });
+    else
+      this.props.register({
+        username: this.state.username,
+        password: this.state.password,
+      });
     this.setState({ username: '', password: '' });
   };
 
@@ -55,4 +66,9 @@ class AuthForm extends React.Component {
   }
 }
 
-export default AuthForm;
+const mapDispatchToProps = (dispatch) => ({
+  login: (user) => dispatch(login(user)),
+  register: (user) => dispatch(register(user)),
+});
+
+export default connect(null, mapDispatchToProps)(AuthForm);
