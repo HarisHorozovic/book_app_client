@@ -11,6 +11,8 @@ import AuthPage from './pages/auth-page/auth.component.jsx';
 import CreateItemPage from './pages/create-item-page/create-item-page.component';
 import EditAuthor from './pages/edit-author/edit-author.component';
 import EditBook from './pages/edit-book/edit-book.component';
+import AuthorPage from './pages/author-page/author-page.component';
+import BookPage from './pages/book-page/book-page.component';
 
 import { checkLogin } from './redux/user/user.actions';
 
@@ -36,6 +38,8 @@ class App extends React.Component {
           <Route exact path='/create' component={CreateItemPage} />
           <Route path='/edit-author/:authorId' component={EditAuthor} />
           <Route path='/edit-book/:bookId' component={EditBook} />
+          <Route path='/author/:authorId' component={AuthorPage} />
+          <Route path='/book/:bookId' component={BookPage} />
         </Switch>
       </div>
     );

@@ -5,3 +5,11 @@
 .item-column {
   margin-top: 10px;
 }
+
+.table img {
+  max-height: 100px;
+}
+
+.display-item {
+  cursor: pointer;
+}

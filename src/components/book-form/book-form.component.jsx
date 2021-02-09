@@ -1,10 +1,15 @@
 import React from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Card, Container, Col, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 
 import FormInput from '../form-input/form-input.component';
 
-import { createBook, editBook } from '../../redux/book/book.actions';
+import {
+  createBook,
+  editBook,
+  addAuthorToBook,
+  removeAuthorFromBook,
+} from '../../redux/book/book.actions';
 
 class BookForm extends React.Component {
   constructor() {
@@ -17,6 +22,7 @@ class BookForm extends React.Component {
       published: 0,
       newImage: '',
       image: '',
+      search: '',
     };
   }
 
@@ -38,8 +44,8 @@ class BookForm extends React.Component {
     data.append('pages', this.state.pages);
     data.append('published', this.state.published);
 
-    if (this.state.newImage || this.state.newImage != '') {
-      data.append('image', this.state.newImage);
+    if (this.state.image || this.state.image != '') {
+      data.append('image', this.state.image);
     }
 
     if (this.props.singleBook) {
@@ -47,6 +53,14 @@ class BookForm extends React.Component {
     } else {
       this.props.createBook(data);
     }
+  };
+
+  addBook = (bookId, authorId) => {
+    this.props.addAuthorToBook(bookId, { idAuthor: authorId });
+  };
+
+  removeBook = (bookId, authorId) => {
+    this.props.removeAuthorFromBook(bookId, authorId);
   };
 
   componentDidMount = () => {
@@ -101,11 +115,63 @@ class BookForm extends React.Component {
           <Form.File
             onChange={this.handleFileChange}
             id='image'
-            name='newImage'
+            name='image'
             placeholder='Upload image'
           />
           <Form.Text>Error handle here</Form.Text>
         </Form.Group>
+
+        {this.props.type && this.props.type == 'edit' ? (
+          this.props.authors && this.props.authors.length > 0 ? (
+            <Container>
+              <h3>Add authors to book</h3>
+              <Form.Group controlId='authorSearch'>
+                <Form.Control
+                  onChange={this.handleChange}
+                  name='search'
+                  placeholder='Search authors'
+                />
+              </Form.Group>
+              <Row>
+                {this.props.authors.map((author) => {
+                  return `${author.firstName} ${author.lastName}`
+                    .toLowerCase()
+                    .includes(this.state.search.toLowerCase()) ? (
+                    <Col xs={12} md={4} lg={3} key={author.id}>
+                      <Card>
+                        <Card.Header>
+                          <Card.Title>
+                            {author.firstName + ' ' + author.lastName}
+                          </Card.Title>
+                        </Card.Header>
+                        <Card.Body>
+                          <Button
+                            variant='primary'
+                            onClick={() =>
+                              this.addBook(this.state.isbn, author.id)
+                            }
+                          >
+                            Add
+                          </Button>
+                          <Button
+                            variant='danger'
+                            onClick={() =>
+                              this.removeBook(this.state.isbn, author.id)
+                            }
+                          >
+                            Remove
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ) : null;
+                })}
+              </Row>
+            </Container>
+          ) : (
+            <h2>There are no authors</h2>
+          )
+        ) : null}
 
         <Button variant='primary' type='submit' onClick={this.handleSubmit}>
           Submit
@@ -115,13 +181,20 @@ class BookForm extends React.Component {
   }
 }
 
-const mapStateToProps = ({ book }) => ({
+const mapStateToProps = ({ book, author }) => ({
   singleBook: book.singleBook,
+  authors: author.authors,
+  bookMessage: book.bookMessage,
+  bookError: book.bookError,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   createBook: (data) => dispatch(createBook(data)),
   editBook: (bookId, data) => dispatch(editBook(bookId, data)),
+  addAuthorToBook: (bookId, authorId) =>
+    dispatch(addAuthorToBook(bookId, authorId)),
+  removeAuthorFromBook: (bookId, authorId) =>
+    dispatch(removeAuthorFromBook(bookId, authorId)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BookForm);

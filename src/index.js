@@ -10,6 +10,7 @@ import reportWebVitals from './reportWebVitals';
 import store from './redux/store';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'alertifyjs/build/css/alertify.min.css';
 
 ReactDOM.render(
   <Provider store={store}>

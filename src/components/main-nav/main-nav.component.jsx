@@ -18,9 +18,9 @@ const MainNav = ({ currentUser, logout }) => {
       <Navbar.Toggle aria-controls='basic-navbar-nav' />
       <Navbar.Collapse id='basic-navbar-nav'>
         <Nav className='mr-auto'>
+          <Nav.Link href='/'>Home</Nav.Link>
           {currentUser ? (
             <Nav>
-              <Nav.Link href='/'>Home</Nav.Link>
               <Nav.Link href='/create'>Add New</Nav.Link>
               <Button onClick={() => logout()}>Logout</Button>
             </Nav>

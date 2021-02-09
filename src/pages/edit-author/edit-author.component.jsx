@@ -8,7 +8,7 @@ class EditAuthor extends React.Component {
   render() {
     return (
       <div className='edit-author-page'>
-        <AuthorForm />
+        <AuthorForm type='edit' />
       </div>
     );
   }

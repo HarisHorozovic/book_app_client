@@ -1,10 +1,15 @@
 import React from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Card, Container, Row, Col } from 'react-bootstrap';
 import { connect } from 'react-redux';
 
 import FormInput from '../form-input/form-input.component';
 
-import { createAuthor, editAuthor } from '../../redux/author/author.actions';
+import {
+  createAuthor,
+  editAuthor,
+  addBookToAuthor,
+  removeBookFromAuthor,
+} from '../../redux/author/author.actions';
 
 class AuthorForm extends React.Component {
   constructor(props) {
@@ -16,6 +21,7 @@ class AuthorForm extends React.Component {
       lastName: '',
       dob: '',
       image: '',
+      search: '',
     };
   }
 
@@ -48,8 +54,20 @@ class AuthorForm extends React.Component {
     }
   };
 
+  addBook = (authorId, bookId) => {
+    this.props.addBookToAuthor(authorId, { idBook: bookId });
+  };
+
+  removeBook = (authorId, bookId) => {
+    this.props.removeBookFromAuthor(authorId, bookId);
+  };
+
   componentDidMount = () => {
-    this.setState(this.props.singleAuthor);
+    if (this.props.singleAuthor) {
+      const { id, firstName, lastName, dob, image } = this.props.singleAuthor;
+      let date = new Date(Date.parse(dob)).toISOString().substr(0, 10);
+      this.setState({ id, firstName, lastName, dob: date, image });
+    }
   };
 
   render() {
@@ -96,6 +114,56 @@ class AuthorForm extends React.Component {
           <Form.Text>Error handle here</Form.Text>
         </Form.Group>
 
+        {this.props.type && this.props.type == 'edit' ? (
+          this.props.books && this.props.books.length > 0 ? (
+            <Container>
+              <h3>Add books to author</h3>
+              <Form.Group controlId='bookSearch'>
+                <Form.Control
+                  onChange={this.handleChange}
+                  name='search'
+                  placeholder='Search books'
+                />
+              </Form.Group>
+              <Row>
+                {this.props.books.map((book) => {
+                  return book.title
+                    .toLowerCase()
+                    .includes(this.state.search.toLowerCase()) ? (
+                    <Col xs={12} md={4} lg={3} key={book.isbn}>
+                      <Card>
+                        <Card.Header>
+                          <Card.Title>{book.title}</Card.Title>
+                        </Card.Header>
+                        <Card.Body>
+                          <Button
+                            variant='primary'
+                            onClick={() =>
+                              this.addBook(this.state.id, book.isbn)
+                            }
+                          >
+                            Add
+                          </Button>
+                          <Button
+                            variant='danger'
+                            onClick={() =>
+                              this.removeBook(this.state.id, book.isbn)
+                            }
+                          >
+                            Remove
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ) : null;
+                })}
+              </Row>
+            </Container>
+          ) : (
+            <h2>There are no books</h2>
+          )
+        ) : null}
+
         <Button variant='primary' type='submit' onClick={this.handleSubmit}>
           Submit
         </Button>
@@ -107,11 +175,16 @@ class AuthorForm extends React.Component {
 const mapStateToProps = ({ author, book }) => ({
   singleAuthor: author.singleAuthor,
   singleBook: book.singleBook,
+  books: book.books,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   createAuthor: (data) => dispatch(createAuthor(data)),
   editAuthor: (authorId, data) => dispatch(editAuthor(authorId, data)),
+  addBookToAuthor: (authorId, bookId) =>
+    dispatch(addBookToAuthor(authorId, bookId)),
+  removeBookFromAuthor: (authorId, bookId) =>
+    dispatch(removeBookFromAuthor(authorId, bookId)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AuthorForm);

@@ -33,10 +33,35 @@ const bookReducer = (state = INITIAL_STATE, action) => {
         books: state.books.filter((book) => book.isbn !== action.payload),
         bookError: null,
       };
+    case BookActionTypes.UPDATE_BOOK:
+      return {
+        ...state,
+        bookMessage: action.payload,
+        bookError: null,
+      };
+    case BookActionTypes.ADD_AUTHOR_TO_BOOK:
+      return {
+        ...state,
+        bookMessage: action.payload,
+        bookError: null,
+      };
+    case BookActionTypes.GET_AUTHORS_FROM_BOOK:
+      return {
+        ...state,
+        bookAuthors: action.payload,
+        bookError: null,
+      };
+    case BookActionTypes.REMOVE_AUTHOR_FROM_BOOK:
+      return {
+        ...state,
+        bookMessage: action.payload,
+        bookError: null,
+      };
     case BookActionTypes.SET_BOOK_ERROR:
       return {
         ...state,
         bookError: action.payload,
+        bookMessage: null,
       };
     default:
       return state;

@@ -8,8 +8,13 @@ import './single-item.styles.css';
 import {
   deleteAuthor,
   getSingleAuthor,
+  getBooksFromAuthor,
 } from '../../redux/author/author.actions';
-import { deleteBook, getSingleBook } from '../../redux/book/book.actions';
+import {
+  deleteBook,
+  getSingleBook,
+  getAuthorsFromBook,
+} from '../../redux/book/book.actions';
 
 import {
   Card,
@@ -31,11 +36,26 @@ const deleteItem = (id, isbn, props) => {
 
 const editItem = async (id, isbn, props) => {
   if (isbn) {
+    await props.getAuthorsFromBook(isbn);
     await props.getSingleBook(isbn);
     props.history.push(`/edit-book/${isbn}`);
   } else {
+    await props.getBooksFromAuthor(id);
     await props.getSingleAuthor(id);
     props.history.push(`/edit-author/${id}`);
+  }
+};
+
+const displaySingleItem = async (id, isbn, props) => {
+  console.log(id, isbn);
+  if (id) {
+    await props.getBooksFromAuthor(id);
+    await props.getSingleAuthor(id);
+    props.history.push(`/author/${id}`);
+  } else {
+    await props.getAuthorsFromBook(isbn);
+    await props.getSingleBook(isbn);
+    props.history.push(`/book/${isbn}`);
   }
 };
 
@@ -49,17 +69,15 @@ const SingleItem = (props) => {
     title,
     pages,
     published,
-    authors,
-    books,
     image,
   } = props.item;
 
-  const { currentUser } = props;
+  const { currentUser, authors, books } = props;
   return (
     <Card>
       <Card.Header>
         <Card.Title>
-          <Card.Link href={isbn ? `/edit-book/${isbn}` : `/edit-author/${id}`}>
+          <Card.Link onClick={() => displaySingleItem(id, isbn, props)}>
             {title ? title : firstName + ' ' + lastName}
           </Card.Link>
         </Card.Title>
@@ -90,7 +108,9 @@ const SingleItem = (props) => {
         ) : null}
         {image && image != '' ? <Card.Img variant='top' src={image} /> : null}
         {dob ? (
-          <Card.Text>DOB: {dob}</Card.Text>
+          <Card.Text>
+            DOB: {new Date(Date.parse(dob)).toISOString().substr(0, 10)}
+          </Card.Text>
         ) : (
           <Card.Text>
             Pages: {pages}| Published: {published}
@@ -98,9 +118,12 @@ const SingleItem = (props) => {
         )}
         {authors && authors.length > 0 ? (
           <ListGroup>
+            <h2>Authors</h2>
             {authors.map((author) => (
               <ListGroupItem key={author.id}>
-                <Card.Link href='#'>
+                <Card.Link
+                  onClick={() => displaySingleItem(author.id, isbn, props)}
+                >
                   {author.firstName + ' ' + author.lastName}
                 </Card.Link>
               </ListGroupItem>
@@ -108,9 +131,14 @@ const SingleItem = (props) => {
           </ListGroup>
         ) : books && books.length > 0 ? (
           <ListGroup>
+            <h2>Books</h2>
             {books.map((book) => (
               <ListGroupItem key={book.isbn}>
-                <Card.Link href='#'>{book.title}</Card.Link>
+                <Card.Link
+                  onClick={() => displaySingleItem(null, book.isbn, props)}
+                >
+                  {book.title}
+                </Card.Link>
               </ListGroupItem>
             ))}
           </ListGroup>
@@ -129,6 +157,8 @@ const mapDispatchToProps = (dispatch) => ({
   deleteBook: (bookId) => dispatch(deleteBook(bookId)),
   getSingleAuthor: (authorId) => dispatch(getSingleAuthor(authorId)),
   getSingleBook: (bookId) => dispatch(getSingleBook(bookId)),
+  getBooksFromAuthor: (authorId) => dispatch(getBooksFromAuthor(authorId)),
+  getAuthorsFromBook: (bookId) => dispatch(getAuthorsFromBook(bookId)),
 });
 
 export default connect(

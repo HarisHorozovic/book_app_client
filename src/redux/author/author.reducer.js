@@ -43,6 +43,30 @@ const authorReducer = (state = INITIAL_STATE, action) => {
         authorBooks: null,
         authorError: null,
       };
+    case AuthorActionTypes.UPDATE_AUTHOR:
+      return {
+        ...state,
+        authorMessage: action.payload,
+        authorError: null,
+      };
+    case AuthorActionTypes.ADD_BOOK_TO_AUTHOR:
+      return {
+        ...state,
+        authorMessage: action.payload,
+        authorError: null,
+      };
+    case AuthorActionTypes.REMOVE_BOOK_FROM_AUTHOR:
+      return {
+        ...state,
+        authorMessage: action.payload,
+        authorError: null,
+      };
+    case AuthorActionTypes.GET_BOOKS_FROM_AUTHOR:
+      return {
+        ...state,
+        authorsBooks: action.payload,
+        authorError: null,
+      };
     case AuthorActionTypes.SET_AUTHOR_ERROR:
       return {
         ...state,
